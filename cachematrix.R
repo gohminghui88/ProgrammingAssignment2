@@ -1,41 +1,39 @@
 
-##Make a special square matrix with cache support
-makeCacheMatrix <- function(x = matrix()) {
-  r <- NULL
+
+makeCacheMatrix <- function(x = numeric()) {
   
-  set <- function(y) {
-    x <<- y
-    r <<- NULL
+  m <- NULL;
+  set <- function(y) {    #set the x in cache
+    x <<- y;
+    m <<- NULL;
   }
   
-  get <- function() x
+  get <- function() { return(x); }   #function to get the x from makeCacheMatrix() function parameter x, or the x in cache
   
-  setResults <- function(solve) {
-    r <<- solve
-  }
+  setMatrix <- function(matrix) { m <<- matrix; }   #function to set the m in cache
+  getMatrix <- function() { return(m); } #function to get the m in cache
   
-  getResults <- function(solve) r
   
-  list(set = set, get = get, 
-       setResults = setResults, 
-       getResults = getResults)
+  return(list(set = set, get = get, setmatrix=setMatrix, getmatrix=getMatrix)); #return a list containing all the functions
+  
 }
 
-
-##solve or inverse square matrix with cache support
 cacheSolve <- function(x, ...) {
-  ## Return a matrix that is the inverse of 'x'
-  r <- x$getResults()
-  if(!is.null(r)) {
-    message("getting cached data")
-    return(r)
+  #x is the list(set = set, get = get, setmatrix=setMatrix, getmatrix=getMatrix) in makeCacheMatrix
+  
+  m <- x$getmatrix();   #call the getMatrix() function to get the m stored in cache
+  if(!is.null(m)) {  #if m is not empty, just return m
+    message("get chached data");
+    return(m);
   }
-  data <- x$get()
-  r <- solve(data, ...)
-  x$setResults(r)
-  r
+  
+  matrix <- x$get();    #if m is empty, call the get function to get the x passed into makeCacheMatrix(x)
+  m <- solve(matrix, ...);  #solve the x passed into makeCacheMatrix(x)
+  
+  x$setmatrix(m);  #call the setMatrix() function to set the m stored in cache to the solved results
+  
+  return(m);  #return the solved results
 }
-
 
 
 ##Testing
@@ -76,8 +74,3 @@ x3
 
 message("Results are identical: ")
 identical(x2, x3)
-
-
-
-
-
